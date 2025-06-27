@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /reports/{reportId} {
+      // Allow a user to create a report if they are the owner
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      
+      // Allow a user to read their own report
+      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
+
+      // Allow the backend (Cloud Function) to update the report
+      // This rule assumes the backend is using an Admin SDK, which bypasses these rules.
+      // For client-side updates, you would add:
+      // allow update: if request.auth != null && resource.data.uid == request.auth.uid;
+    }
+  }
+}

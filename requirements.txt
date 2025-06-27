@@ -1,0 +1,10 @@
+# App Dependencies
+Flask
+Flask-Cors
+PyMuPDF==1.24.1
+google-cloud-storage==2.16.0
+firebase-admin==6.5.0
+python-dotenv==1.0.1
+google-generativeai==0.5.4
+google-cloud-firestore==2.16.0
+Pillow

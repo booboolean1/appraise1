@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Upload Test</title>
+</head>
+<body>
+    <h1>Direct Upload Test</h1>
+    <form id="uploadForm">
+        <label for="file">PDF File:</label><br>
+        <input type="file" id="file" name="file" accept=".pdf" required><br><br>
+        
+        <label for="expectedValue">Expected Value:</label><br>
+        <input type="text" id="expectedValue" name="expectedValue" value="500000" required><br><br>
+        
+        <label for="fullName">Full Name:</label><br>
+        <input type="text" id="fullName" name="fullName" value="Test User" required><br><br>
+
+        <label for="token">Firebase ID Token:</label><br>
+        <textarea id="token" name="token" rows="4" cols="50" required>eyJhbGciOiJSUzI1NiIsImtpZCI6Ijg3NzQ4NTAwMmYwNWJlMDI2N2VmNDU5ZjViNTEzNTMzYjVjNThjMTIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vZ2VuLWxhbmctY2xpZW50LTA1MTg2NzgyMjUiLCJhdWQiOiJnZW4tbGFuZy1jbGllbnQtMDUxODY3ODIyNSIsImF1dGhfdGltZSI6MTc1MDgzMDY5MiwidXNlcl9pZCI6ImEzMGEwWE10QzJoTU1pckZXdmd3d0xSTFhoSTMiLCJzdWIiOiJhMzBhMFhNdEMyaE1NaXJGV3Znd3dMUkxYaEkzIiwiaWF0IjoxNzUwOTQ4ODUzLCJleHAiOjE3NTA5NTI0NTMsImVtYWlsIjoidmVydnVzLmFnZW5jeUBnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZW1haWwiOlsidmVydnVzLmFnZW5jeUBnbWFpbC5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.SHC8DNT4-Vu6XFOU7LifkuIc8X42nNr__JQ5yWdedp1nfU5lGw4Q3NPFW-i3JYhdqYC8RPjOL1_qwkga-6iFGhxzGLPtNxzpuea4SCEC1oXFYNVunRXEXqbiPgz1wQx10SCWPWEaO6VMzfwgFKLAfPkYpq74w_Y0lX-JpuF-yuVUkEgYCYUUEKPAku4-1aljC_nPShn4cAv7f4hu5XO9arHhM-Y59dWfsHK1bcbXu0FXzg-EhdMEczuHtIfI8SO8QV2KaWDe3AD33TLSpMHtd31GTzgaBOQo1_mHjinFCU3DUnWn45v1EH9IbU24K4hl0SjyR0bsry8TXGdz6Bn0lw</textarea><br><br>
+        
+        <button type="submit">Upload and Analyze</button>
+    </form>
+
+    <h2>Result</h2>
+    <pre id="result"></pre>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = 'Loading...';
+
+            const fileInput = document.getElementById('file');
+            const file = fileInput.files[0];
+            const expectedValue = document.getElementById('expectedValue').value;
+            const fullName = document.getElementById('fullName').value;
+            const token = document.getElementById('token').value;
+
+            if (!file || !expectedValue || !fullName || !token || token === 'PASTE_YOUR_ID_TOKEN_HERE') {
+                resultElement.textContent = 'Error: All fields, including a valid token, are required.';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('expectedValue', expectedValue);
+            formData.append('fullName', fullName);
+
+            try {
+                const response = await fetch('http://localhost:8080/api/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: formData,
+                });
+
+                const responseData = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(responseData.message || `File upload failed with status: ${response.status}`);
+                }
+
+                resultElement.textContent = JSON.stringify(responseData, null, 2);
+
+            } catch (err) {
+                console.error(err);
+                resultElement.textContent = `Error: ${err.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

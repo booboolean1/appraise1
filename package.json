@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@radix-ui/react-dropdown-menu": "^2.1.15",
+    "@radix-ui/react-slot": "^1.2.3",
+    "firebase": "^11.9.1",
+    "framer-motion": "^12.19.1",
+    "lucide-react": "^0.523.0"
+  }
+}
